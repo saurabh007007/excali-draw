@@ -1,0 +1,21 @@
+{
+  "name": "@repo/http-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "exports": {
+    "./http": "./src/index.ts"
+  },
+  
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "@repo/typescript-config":"workspace:*"
+  }
+}

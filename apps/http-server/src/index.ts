@@ -1,10 +1,12 @@
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs"
 import { middleware } from "./middleware.js";
 import {CreateUserSchema,CreateRoomSchema,SigninSchema} from "@repo/common/types";
 import {prismaClient} from "@repo/db/client";
+
+import {JWT_SECRET} from "@repo/http-backend/http" 
 
 
 
@@ -18,10 +20,13 @@ app.get("/",(req,res)=>{
 })
 
 app.post("/signin",(req,res)=>{
- const userid=1;
+ const parsedData=SigninSchema.safeParse(req.body);
+ const {username,pasdword}=parsedData.data;
+
+ const hashverify=bcryptjs.compare()
  const token =jwt.sign({
-    userid
- },process.env.JWT_SECRET??"");
+   username
+ },JWT_SECRET);
 
  res.json({
     token
@@ -38,17 +43,19 @@ app.post("/signup", async (req,res)=>{
         return;
     }
     try {
-        const hasedPassword= await bcrypt.hash(parsedData.data.password,10);
+        const hashedPassword= await bcryptjs.hash(parsedData.data.password,10)
+        console.log(hashedPassword)
         const user = await prismaClient.user.create({
             data: {
                 email: parsedData.data?.username,
                 
-                password: hasedPassword,
+                password: hashedPassword,
                 name: parsedData.data.name
             }
         })
         res.json({
-            userId: user.id
+            userId: user.id,
+            message:"user signup succesfully"
         })
     } catch(e) {
         res.status(411).json({
@@ -58,7 +65,7 @@ app.post("/signup", async (req,res)=>{
 
 })
 app.post("/room",middleware,(req,res)=>{
-
+ 
 })
 
 app.listen(8081,()=>{
